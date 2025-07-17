@@ -49,3 +49,12 @@
 /Users/xiaowei/Downloads/test/NotesApp/NotesApi/obj/Debug/net9.0/NotesApi.pdb
 /Users/xiaowei/Downloads/test/NotesApp/NotesApi/obj/Debug/net9.0/NotesApi.genruntimeconfig.cache
 /Users/xiaowei/Downloads/test/NotesApp/NotesApi/obj/Debug/net9.0/ref/NotesApi.dll
+/Users/xiaowei/Downloads/test/NotesApp/NotesApi/bin/Debug/net9.0/BCrypt.Net-Next.dll
+/Users/xiaowei/Downloads/test/NotesApp/NotesApi/bin/Debug/net9.0/Microsoft.AspNetCore.Authentication.JwtBearer.dll
+/Users/xiaowei/Downloads/test/NotesApp/NotesApi/bin/Debug/net9.0/Microsoft.IdentityModel.Abstractions.dll
+/Users/xiaowei/Downloads/test/NotesApp/NotesApi/bin/Debug/net9.0/Microsoft.IdentityModel.JsonWebTokens.dll
+/Users/xiaowei/Downloads/test/NotesApp/NotesApi/bin/Debug/net9.0/Microsoft.IdentityModel.Logging.dll
+/Users/xiaowei/Downloads/test/NotesApp/NotesApi/bin/Debug/net9.0/Microsoft.IdentityModel.Protocols.dll
+/Users/xiaowei/Downloads/test/NotesApp/NotesApi/bin/Debug/net9.0/Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+/Users/xiaowei/Downloads/test/NotesApp/NotesApi/bin/Debug/net9.0/Microsoft.IdentityModel.Tokens.dll
+/Users/xiaowei/Downloads/test/NotesApp/NotesApi/bin/Debug/net9.0/System.IdentityModel.Tokens.Jwt.dll
