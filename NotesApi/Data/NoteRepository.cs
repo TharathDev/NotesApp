@@ -1,5 +1,5 @@
 using Dapper;
-using Microsoft.Data.SqlClient;
+using MySql.Data.MySqlClient;
 using NotesApi.Models;
 using System.Data;
 
@@ -16,7 +16,7 @@ namespace NotesApi.Data
 
         public async Task<IEnumerable<Note>> GetAllNotesAsync()
         {
-            using var connection = new SqlConnection(_connectionString);
+            using var connection = new MySqlConnection(_connectionString);
             const string sql = "SELECT Id, Title, Content, CreatedAt, UpdatedAt FROM Notes ORDER BY CreatedAt DESC";
             return await connection.QueryAsync<Note>(sql);
         }

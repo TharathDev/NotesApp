@@ -1,0 +1,12 @@
+USE notesdb;
+
+CREATE TABLE Notes (
+    Id INT AUTO_INCREMENT PRIMARY KEY,
+    Title VARCHAR(255) NOT NULL,
+    Content TEXT,
+    CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    UpdatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+INSERT INTO Notes (Title, Content) VALUES 
+('Welcome Note', 'hello world!');

@@ -52,9 +52,9 @@
               "target": "Package",
               "version": "[9.0.7, )"
             },
-            "Microsoft.Data.SqlClient": {
+            "MySql.Data": {
               "target": "Package",
-              "version": "[6.0.2, )"
+              "version": "[9.3.0, )"
             }
           },
           "imports": [
