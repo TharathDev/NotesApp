@@ -1,7 +1,6 @@
 using Dapper;
 using MySql.Data.MySqlClient;
 using NotesApi.Models;
-using System.Data;
 
 namespace NotesApi.Data
 {
