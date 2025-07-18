@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   mysql:
@@ -16,6 +16,10 @@ services:
       - ./sql:/docker-entrypoint-initdb.d
     networks:
       - notes_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
 
   api:
     build:
@@ -25,11 +29,36 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
+      - DOTNET_RUNNING_IN_CONTAINER=true
       - ConnectionStrings__DefaultConnection=Server=mysql;Port=3306;Database=notesdb;Uid=notesuser;Pwd=notespassword;
     ports:
       - "5197:80"
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
+    networks:
+      - notes_network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:80/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+
+  frontend:
+    build:
+      context: ./NotesUI
+      dockerfile: Dockerfile
+    container_name: notes_frontend
+    environment:
+      - NODE_ENV=production
+      - API_BASE_URL=http://api:80
+      - NUXT_PUBLIC_API_BASE=http://localhost:5197
+    ports:
+      - "3000:3000"
+    depends_on:
+      api:
+        condition: service_healthy
     networks:
       - notes_network
 

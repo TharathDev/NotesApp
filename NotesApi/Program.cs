@@ -62,9 +62,19 @@ if (app.Environment.IsDevelopment())
 // Use CORS - IMPORTANT: This must be before UseAuthentication and UseAuthorization
 app.UseCors("AllowFrontend");
 
-app.UseHttpsRedirection();
+// Only redirect to HTTPS in production and when not in Docker
+if (app.Environment.IsProduction() && !Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER").Equals("true"))
+{
+    app.UseHttpsRedirection();
+}
+
 app.UseAuthentication();
 app.UseAuthorization();
+
+// Add health check endpoint
+app.MapGet("/health", () => Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow }))
+    .WithName("HealthCheck")
+    .WithOpenApi();
 
 // Helper method to get current user ID
 static int GetCurrentUserId(ClaimsPrincipal user)
