@@ -49,6 +49,7 @@ services:
     build:
       context: ./NotesUI
       dockerfile: Dockerfile
+    container_name: notes_ui
     ports:
       - "3000:3000"
     environment:
