@@ -14,14 +14,14 @@ export interface FormField {
 export const useFormFields = () => {
   const loginFields: FormField[] = [
     {
-      name: 'email',
-      type: 'email',
-      label: 'Email',
-      placeholder: 'Enter your email',
+      name: 'username',
+      type: 'text',
+      label: 'Username',
+      placeholder: 'Enter your username',
       required: true,
       validation: {
-        pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-        message: 'Please enter a valid email address'
+        minLength: 3,
+        message: 'Username must be at least 3 characters long'
       }
     },
     {
@@ -39,20 +39,20 @@ export const useFormFields = () => {
 
   const registerFields: FormField[] = [
     {
-      name: 'fullName',
+      name: 'username',
       type: 'text',
-      label: 'Full Name',
-      placeholder: 'Enter your full name',
+      label: 'Username',
+      placeholder: 'Enter your username',
       required: true,
       validation: {
-        minLength: 2,
-        message: 'Full name must be at least 2 characters long'
+        minLength: 3,
+        message: 'Username must be at least 3 characters long'
       }
     },
     {
       name: 'email',
       type: 'email',
-      label: 'Email',
+      label: 'Email Address',
       placeholder: 'Enter your email',
       required: true,
       validation: {
@@ -69,17 +69,6 @@ export const useFormFields = () => {
       validation: {
         minLength: 6,
         message: 'Password must be at least 6 characters long'
-      }
-    },
-    {
-      name: 'confirmPassword',
-      type: 'password',
-      label: 'Confirm Password',
-      placeholder: 'Confirm your password',
-      required: true,
-      validation: {
-        minLength: 6,
-        message: 'Password confirmation is required'
       }
     }
   ]

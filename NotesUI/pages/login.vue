@@ -6,6 +6,12 @@
           Sign in to your account
         </h2>
       </div>
+      
+      <!-- Error Alert -->
+      <div v-if="authError" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative" role="alert">
+        <span class="block sm:inline">{{ authError }}</span>
+      </div>
+      
       <form class="mt-8 space-y-6" @submit.prevent="handleSubmit(onSubmit)">
         <div class="space-y-4">
           <div v-for="field in loginFields" :key="field.name">
@@ -24,10 +30,10 @@
         <div>
           <Button
             type="submit"
-            :disabled="isSubmitting"
+            :disabled="isSubmitting || authLoading"
             class="w-full"
           >
-            {{ isSubmitting ? 'Signing in...' : 'Sign in' }}
+            {{ isSubmitting || authLoading ? 'Signing in...' : 'Sign in' }}
           </Button>
         </div>
 
@@ -47,16 +53,26 @@
 <script setup lang="ts">
 import { useFormFields } from '~/composables/useFormFields'
 import { useFormValidation } from '~/composables/useFormValidation'
+import { useAuth } from '~/composables/useAuth'
 import type { FormData } from '~/composables/useFormValidation'
 
 const { loginFields } = useFormFields()
 const { formData, errors, isSubmitting, getFieldError, handleFieldChange, handleSubmit } = useFormValidation(loginFields)
+const { login, isLoading: authLoading, error: authError } = useAuth()
 
 const onSubmit = async (data: FormData) => {
-  console.log('Login form submitted:', data)
-  // Here you would typically make an API call to authenticate
-  // For now, just simulate a delay
-  await new Promise(resolve => setTimeout(resolve, 1000))
-  alert(`Login attempted with email: ${data.email}`)
+  try {
+    const success = await login({
+      username: data.username, // Now using username field directly
+      password: data.password
+    })
+    
+    if (success) {
+      // Redirect to notes page or dashboard
+      await navigateTo('/notes')
+    }
+  } catch (err) {
+    console.error('Login error:', err)
+  }
 }
 </script>
