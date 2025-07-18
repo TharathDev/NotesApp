@@ -16,7 +16,10 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins("http://localhost:3000") // Nuxt dev server
+        policy.WithOrigins(
+                "http://localhost:3000", // Local development
+                "http://frontend:3000"   // Docker container
+              )
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
