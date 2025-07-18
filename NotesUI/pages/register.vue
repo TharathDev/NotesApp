@@ -60,6 +60,8 @@ const { registerFields } = useFormFields()
 const { formData, errors, isSubmitting, getFieldError, handleFieldChange, handleSubmit } = useFormValidation(registerFields)
 const { register, isLoading: authLoading, error: authError } = useAuth()
 
+// Remove line 76: console.error('Registration error:', err)
+// In the onSubmit function:
 const onSubmit = async (data: FormData) => {
   try {
     const success = await register({
@@ -69,11 +71,10 @@ const onSubmit = async (data: FormData) => {
     })
     
     if (success) {
-      // Redirect to notes page or dashboard
       await navigateTo('/notes')
     }
   } catch (err) {
-    console.error('Registration error:', err)
+    // Handle error silently or show user-friendly message
   }
 }
 </script>

@@ -126,7 +126,6 @@ export const useFormValidation = (fields: FormField[]) => {
     }
   };
 
-  // Handle form submission
   const handleSubmit = async (
     submitCallback: (data: FormData) => Promise<void> | void
   ) => {
@@ -139,7 +138,7 @@ export const useFormValidation = (fields: FormField[]) => {
         await submitCallback(formData.value);
       }
     } catch (error) {
-      console.error("Form submission error:", error);
+      // Handle error silently or show user-friendly message
     } finally {
       isSubmitting.value = false;
     }

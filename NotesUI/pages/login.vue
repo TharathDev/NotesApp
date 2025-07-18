@@ -60,19 +60,20 @@ const { loginFields } = useFormFields()
 const { formData, errors, isSubmitting, getFieldError, handleFieldChange, handleSubmit } = useFormValidation(loginFields)
 const { login, isLoading: authLoading, error: authError } = useAuth()
 
+// Remove line 75: console.error('Login error:', err)
+// In the onSubmit function:
 const onSubmit = async (data: FormData) => {
   try {
     const success = await login({
-      username: data.username, // Now using username field directly
+      username: data.username,
       password: data.password
     })
     
     if (success) {
-      // Redirect to notes page or dashboard
       await navigateTo('/notes')
     }
   } catch (err) {
-    console.error('Login error:', err)
+    // Handle error silently or show user-friendly message
   }
 }
 </script>
