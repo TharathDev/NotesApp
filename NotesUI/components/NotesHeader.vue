@@ -72,7 +72,7 @@ interface Props {
 }
 
 defineProps<Props>()
-defineEmits<{
+const emit = defineEmits<{
   'update:searchQuery': [value: string]
   'createNote': []
   'logout': []
@@ -90,6 +90,6 @@ const cancelSignOut = () => {
 
 const confirmSignOut = () => {
   showSignOutModal.value = false
-  $emit('logout')
+  emit('logout')
 }
 </script>

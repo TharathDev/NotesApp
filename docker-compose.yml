@@ -49,18 +49,23 @@ services:
     build:
       context: ./NotesUI
       dockerfile: Dockerfile
-    container_name: notes_frontend
-    environment:
-      - NODE_ENV=production
-      - API_BASE_URL=http://api:80
-      - NUXT_PUBLIC_API_BASE=http://localhost:5197
     ports:
       - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NUXT_PUBLIC_API_BASE_URL=http://localhost:5197/api
     depends_on:
       api:
         condition: service_healthy
     networks:
       - notes_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
 
 volumes:
   mysql_data:

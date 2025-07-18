@@ -32,7 +32,7 @@ export const useNotes = () => {
     error.value = null
     
     try {
-      const response = await $fetch<Note[]>(`${config.public.apiBase}/api/notes`, {
+      const response = await $fetch<Note[]>(`${config.public.apiBaseUrl}/notes`, {
         headers: getAuthHeaders()
       })
       
@@ -48,7 +48,7 @@ export const useNotes = () => {
   
   const createNote = async (noteData: CreateNoteRequest): Promise<boolean> => {
     try {
-      const response = await $fetch<Note>(`${config.public.apiBase}/api/notes`, {
+      const response = await $fetch<Note>(`${config.public.apiBaseUrl}/notes`, {
         method: 'POST',
         headers: getAuthHeaders(),
         body: noteData
@@ -64,7 +64,7 @@ export const useNotes = () => {
   
   const updateNote = async (id: number, noteData: UpdateNoteRequest): Promise<boolean> => {
     try {
-      const response = await $fetch<Note>(`${config.public.apiBase}/api/notes/${id}`, {
+      const response = await $fetch<Note>(`${config.public.apiBaseUrl}/notes/${id}`, {
         method: 'PUT',
         headers: getAuthHeaders(),
         body: noteData
@@ -84,7 +84,7 @@ export const useNotes = () => {
   
   const deleteNote = async (id: number): Promise<boolean> => {
     try {
-      await $fetch(`${config.public.apiBase}/api/notes/${id}`, {
+      await $fetch(`${config.public.apiBaseUrl}/notes/${id}`, {
         method: 'DELETE',
         headers: getAuthHeaders()
       })

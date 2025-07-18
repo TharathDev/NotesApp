@@ -6,22 +6,27 @@
       @create-note="createNewNote"
       @logout="handleLogout"
     />
-    
+
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <!-- Loading State -->
       <div v-if="isLoadingNotes" class="flex justify-center items-center h-64">
         <div class="text-center">
-          <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mb-4"></div>
+          <div
+            class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mb-4"
+          ></div>
           <p class="text-gray-600">Loading your notes...</p>
         </div>
       </div>
-      
+
       <!-- Error State -->
-      <div v-else-if="notesError" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+      <div
+        v-else-if="notesError"
+        class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6"
+      >
         {{ notesError }}
         <button @click="fetchNotes" class="ml-2 underline">Try Again</button>
       </div>
-      
+
       <!-- Empty State -->
       <EmptyState
         v-else-if="filteredNotes.length === 0 && !searchQuery"
@@ -30,16 +35,19 @@
         :show-button="true"
         @create-note="createNewNote"
       />
-      
+
       <!-- No Search Results -->
       <EmptyState
         v-else-if="filteredNotes.length === 0 && searchQuery"
         title="No notes found"
         message="Try adjusting your search terms"
       />
-      
+
       <!-- Notes Grid -->
-      <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div
+        v-else
+        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+      >
         <NoteCard
           v-for="(note, index) in filteredNotes"
           :key="note.id"
@@ -50,7 +58,7 @@
         />
       </div>
     </main>
-    
+
     <!-- Note Editor Modal -->
     <NoteEditor
       :show="showEditor"
@@ -75,152 +83,164 @@
 </template>
 
 <script setup lang="ts">
-import { useAuth } from '~/composables/useAuth'
-import { useNotes, type Note } from '~/composables/useNotes'
-import NotesHeader from '~/components/NotesHeader.vue'
-import NoteCard from '~/components/NoteCard.vue'
-import EmptyState from '~/components/EmptyState.vue'
-import NoteEditor from '~/components/NoteEditor.vue'
-import DeleteConfirmModal from '~/components/DeleteConfirmModal.vue'
+import { useAuth } from "~/composables/useAuth";
+import { useNotes, type Note } from "~/composables/useNotes";
+import NotesHeader from "~/components/NotesHeader.vue";
+import NoteCard from "~/components/NoteCard.vue";
+import EmptyState from "~/components/EmptyState.vue";
+import NoteEditor from "~/components/NoteEditor.vue";
+import DeleteConfirmModal from "~/components/DeleteConfirmModal.vue";
 
-const { user, logout, isAuthenticated } = useAuth()
-const { notes, isLoading: isLoadingNotes, error: notesError, fetchNotes, createNote, updateNote, deleteNote } = useNotes()
+// Add middleware to require authentication
+definePageMeta({
+  middleware: "auth-required",
+});
 
-const searchQuery = ref('')
-const showEditor = ref(false)
-const editingNote = ref<Partial<Note>>({})
-const isNewNote = ref(false)
-const isSaving = ref(false)
-const showDeleteModal = ref(false)
-const noteToDelete = ref<Note | null>(null)
-const isDeleting = ref(false)
+const { user, logout, isAuthenticated } = useAuth();
+const {
+  notes,
+  isLoading: isLoadingNotes,
+  error: notesError,
+  fetchNotes,
+  createNote,
+  updateNote,
+  deleteNote,
+} = useNotes();
+
+const searchQuery = ref("");
+const showEditor = ref(false);
+const editingNote = ref<Partial<Note>>({});
+const isNewNote = ref(false);
+const isSaving = ref(false);
+const showDeleteModal = ref(false);
+const noteToDelete = ref<Note | null>(null);
+const isDeleting = ref(false);
 
 const filteredNotes = computed(() => {
-  if (!searchQuery.value) return notes.value
-  
-  const query = searchQuery.value.toLowerCase()
-  return notes.value.filter(note => 
-    note.title.toLowerCase().includes(query) || 
-    note.content.toLowerCase().includes(query)
-  )
-})
+  if (!searchQuery.value) return notes.value;
+
+  const query = searchQuery.value.toLowerCase();
+  return notes.value.filter(
+    (note) =>
+      note.title.toLowerCase().includes(query) ||
+      note.content.toLowerCase().includes(query)
+  );
+});
 
 const cardColors = [
-  'bg-yellow-200',
-  'bg-orange-200', 
-  'bg-green-200',
-  'bg-purple-200',
-  'bg-blue-200',
-  'bg-pink-200',
-  'bg-indigo-200',
-  'bg-red-200'
-]
+  "bg-yellow-200",
+  "bg-orange-200",
+  "bg-green-200",
+  "bg-purple-200",
+  "bg-blue-200",
+  "bg-pink-200",
+  "bg-indigo-200",
+  "bg-red-200",
+];
 
 const getCardColor = (index: number) => {
-  return cardColors[index % cardColors.length]
-}
+  return cardColors[index % cardColors.length];
+};
 
 watchEffect(() => {
   if (!isAuthenticated.value) {
-    navigateTo('/login')
+    navigateTo("/login");
   }
-})
+});
 
 onMounted(() => {
   if (isAuthenticated.value) {
-    fetchNotes()
+    fetchNotes();
   }
-})
+});
 
 const handleLogout = async () => {
-  logout()
-  await navigateTo('/login')
-}
+  logout();
+  await navigateTo("/login");
+};
 
 const createNewNote = () => {
   editingNote.value = {
-    title: '',
-    content: ''
-  }
-  isNewNote.value = true
-  showEditor.value = true
-}
+    title: "",
+    content: "",
+  };
+  isNewNote.value = true;
+  showEditor.value = true;
+};
 
 const editNote = (note: Note) => {
-  editingNote.value = { ...note }
-  isNewNote.value = false
-  showEditor.value = true
-}
+  editingNote.value = { ...note };
+  isNewNote.value = false;
+  showEditor.value = true;
+};
 
 const closeEditor = () => {
-  showEditor.value = false
-  editingNote.value = {}
-  isNewNote.value = false
-}
+  showEditor.value = false;
+  editingNote.value = {};
+  isNewNote.value = false;
+};
 
 const saveNote = async () => {
   if (!editingNote.value.title && !editingNote.value.content) {
-    return
+    return;
   }
-  
-  isSaving.value = true
-  
+
+  isSaving.value = true;
+
   try {
     if (isNewNote.value) {
       const success = await createNote({
-        title: editingNote.value.title || '',
-        content: editingNote.value.content || ''
-      })
-      
+        title: editingNote.value.title || "",
+        content: editingNote.value.content || "",
+      });
+
       if (success) {
-        closeEditor()
+        closeEditor();
       }
     } else {
       const success = await updateNote(editingNote.value.id!, {
-        title: editingNote.value.title || '',
-        content: editingNote.value.content || ''
-      })
-      
+        title: editingNote.value.title || "",
+        content: editingNote.value.content || "",
+      });
+
       if (success) {
-        closeEditor()
+        closeEditor();
       }
     }
   } catch (error) {
-    console.error('Error saving note:', error)
+    console.error("Error saving note:", error);
   } finally {
-    isSaving.value = false
+    isSaving.value = false;
   }
-}
+};
 
 const showDeleteConfirm = (note: Note) => {
-  noteToDelete.value = note
-  showDeleteModal.value = true
-}
+  noteToDelete.value = note;
+  showDeleteModal.value = true;
+};
 
 const cancelDelete = () => {
-  showDeleteModal.value = false
-  noteToDelete.value = null
-}
+  showDeleteModal.value = false;
+  noteToDelete.value = null;
+};
 
 const confirmDelete = async () => {
-  if (!noteToDelete.value) return
-  
-  isDeleting.value = true
-  
+  if (!noteToDelete.value) return;
+
+  isDeleting.value = true;
+
   try {
-    const success = await deleteNote(noteToDelete.value.id)
+    const success = await deleteNote(noteToDelete.value.id);
     if (success) {
-      showDeleteModal.value = false
-      noteToDelete.value = null
+      showDeleteModal.value = false;
+      noteToDelete.value = null;
     }
   } catch (error) {
-    // Remove lines 189 and 217:
-    // console.error('Error saving note:', error)
-    // console.error('Error deleting note:', error)
+    // Handle error silently or show user-friendly message
   } finally {
-    isDeleting.value = false
+    isDeleting.value = false;
   }
-}
+};
 </script>
 
 <style scoped>

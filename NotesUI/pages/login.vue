@@ -1,17 +1,23 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+  <div
+    class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8"
+  >
     <div class="max-w-md w-full space-y-8">
       <div>
         <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
           Sign in to your account
         </h2>
       </div>
-      
+
       <!-- Error Alert -->
-      <div v-if="authError" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative" role="alert">
+      <div
+        v-if="authError"
+        class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative"
+        role="alert"
+      >
         <span class="block sm:inline">{{ authError }}</span>
       </div>
-      
+
       <form class="mt-8 space-y-6" @submit.prevent="handleSubmit(onSubmit)">
         <div class="space-y-4">
           <div v-for="field in loginFields" :key="field.name">
@@ -33,14 +39,17 @@
             :disabled="isSubmitting || authLoading"
             class="w-full"
           >
-            {{ isSubmitting || authLoading ? 'Signing in...' : 'Sign in' }}
+            {{ isSubmitting || authLoading ? "Signing in..." : "Sign in" }}
           </Button>
         </div>
 
         <div class="text-center">
           <p class="text-sm text-gray-600">
             Don't have an account?
-            <NuxtLink to="/register" class="font-medium text-indigo-600 hover:text-indigo-500">
+            <NuxtLink
+              to="/register"
+              class="font-medium text-indigo-600 hover:text-indigo-500"
+            >
               Sign up
             </NuxtLink>
           </p>
@@ -51,29 +60,39 @@
 </template>
 
 <script setup lang="ts">
-import { useFormFields } from '~/composables/useFormFields'
-import { useFormValidation } from '~/composables/useFormValidation'
-import { useAuth } from '~/composables/useAuth'
-import type { FormData } from '~/composables/useFormValidation'
+import { useFormFields } from "~/composables/useFormFields";
+import { useFormValidation } from "~/composables/useFormValidation";
+import { useAuth } from "~/composables/useAuth";
+import type { FormData } from "~/composables/useFormValidation";
 
-const { loginFields } = useFormFields()
-const { formData, errors, isSubmitting, getFieldError, handleFieldChange, handleSubmit } = useFormValidation(loginFields)
-const { login, isLoading: authLoading, error: authError } = useAuth()
+// Add middleware to prevent authenticated users from accessing login
+definePageMeta({
+  middleware: "auth-guest",
+});
 
-// Remove line 75: console.error('Login error:', err)
-// In the onSubmit function:
+const { loginFields } = useFormFields();
+const {
+  formData,
+  errors,
+  isSubmitting,
+  getFieldError,
+  handleFieldChange,
+  handleSubmit,
+} = useFormValidation(loginFields);
+const { login, isLoading: authLoading, error: authError } = useAuth();
+
 const onSubmit = async (data: FormData) => {
   try {
     const success = await login({
       username: data.username,
-      password: data.password
-    })
-    
+      password: data.password,
+    });
+
     if (success) {
-      await navigateTo('/notes')
+      await navigateTo("/notes");
     }
   } catch (err) {
     // Handle error silently or show user-friendly message
   }
-}
+};
 </script>

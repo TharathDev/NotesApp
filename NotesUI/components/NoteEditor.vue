@@ -17,17 +17,26 @@
       
       <div class="flex-1 p-6 overflow-y-auto">
         <div class="space-y-4">
-          <input
-            :value="note.title"
-            @input="$emit('update:title', $event.target.value)"
-            type="text"
-            placeholder="Note title..."
-            class="w-full text-xl font-semibold border-0 outline-none placeholder-gray-400 text-gray-900"
-          />
+          <div>
+            <input
+              :value="note.title"
+              @input="$emit('update:title', $event.target.value)"
+              type="text"
+              placeholder="Note title... (optional)"
+              class="w-full text-xl font-semibold border-0 outline-none placeholder-gray-400 text-gray-900"
+              :class="{ 'text-red-500': titleError }"
+            />
+            <div v-if="titleError" class="text-red-500 text-sm mt-1">
+              {{ titleError }}
+            </div>
+            <div class="text-gray-400 text-sm mt-1">
+              {{ wordCount }}/25 words
+            </div>
+          </div>
           <textarea
             :value="note.content"
             @input="$emit('update:content', $event.target.value)"
-            placeholder="Start writing your note..."
+            placeholder="Start writing your note... (optional)"
             rows="12"
             class="w-full border-0 outline-none resize-none placeholder-gray-400 text-gray-800 leading-relaxed"
           ></textarea>
@@ -43,7 +52,7 @@
         </button>
         <button
           @click="$emit('save')"
-          :disabled="isSaving"
+          :disabled="isSaving || !!titleError"
           class="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {{ isSaving ? 'Saving...' : 'Save Note' }}
@@ -61,11 +70,23 @@ interface Props {
   isSaving: boolean
 }
 
-defineProps<Props>()
+const props = defineProps<Props>()
 defineEmits<{
   'close': []
   'save': []
   'update:title': [value: string]
   'update:content': [value: string]
 }>()
+
+const wordCount = computed(() => {
+  if (!props.note.title) return 0
+  return props.note.title.trim().split(/\s+/).filter(word => word.length > 0).length
+})
+
+const titleError = computed(() => {
+  if (props.note.title && wordCount.value > 25) {
+    return 'Title must be 25 words or less'
+  }
+  return null
+})
 </script>
