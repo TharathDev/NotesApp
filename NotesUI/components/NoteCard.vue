@@ -16,7 +16,7 @@
     </div>
     
     <div class="flex justify-between items-center text-xs text-gray-600">
-      <span>{{ formatDate(note.updatedAt) }}</span>
+      <span>{{ formatCambodiaDate(note.updatedAt) }}</span>
       <div class="flex items-center space-x-2">
         <button
           @click.stop="$emit('delete', note)"
@@ -34,6 +34,7 @@
 
 <script setup lang="ts">
 import type { Note } from '~/composables/useNotes'
+import { formatCambodiaTime } from '~/composables/useNotes'
 
 interface Props {
   note: Note
@@ -46,14 +47,20 @@ defineEmits<{
   'delete': [note: Note]
 }>()
 
-const formatDate = (dateString: string) => {
+const formatCambodiaDate = (dateString: string) => {
   const date = new Date(dateString)
   const now = new Date()
-  const diffTime = Math.abs(now.getTime() - date.getTime())
+  
+  // Convert both dates to Cambodia timezone for comparison
+  const cambodiaDate = new Date(date.toLocaleString('en-US', { timeZone: 'Asia/Phnom_Penh' }))
+  const cambodiaNow = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Phnom_Penh' }))
+  
+  const diffTime = Math.abs(cambodiaNow.getTime() - cambodiaDate.getTime())
   const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
   
   if (diffDays === 0) {
-    return date.toLocaleTimeString('en-US', { 
+    return cambodiaDate.toLocaleTimeString('en-US', { 
+      timeZone: 'Asia/Phnom_Penh',
       hour: 'numeric', 
       minute: '2-digit',
       hour12: true 
@@ -61,12 +68,16 @@ const formatDate = (dateString: string) => {
   } else if (diffDays === 1) {
     return 'Yesterday'
   } else if (diffDays < 7) {
-    return date.toLocaleDateString('en-US', { weekday: 'long' })
+    return cambodiaDate.toLocaleDateString('en-US', { 
+      timeZone: 'Asia/Phnom_Penh',
+      weekday: 'long' 
+    })
   } else {
-    return date.toLocaleDateString('en-US', { 
+    return cambodiaDate.toLocaleDateString('en-US', { 
+      timeZone: 'Asia/Phnom_Penh',
       month: 'short', 
       day: 'numeric',
-      year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined
+      year: cambodiaDate.getFullYear() !== cambodiaNow.getFullYear() ? 'numeric' : undefined
     })
   }
 }

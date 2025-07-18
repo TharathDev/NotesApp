@@ -107,3 +107,18 @@ export const useNotes = () => {
     deleteNote
   }
 }
+
+
+// Add this helper function to format dates in Cambodia timezone
+export const formatCambodiaTime = (utcDateString: string): string => {
+  const date = new Date(utcDateString);
+  return date.toLocaleString('en-US', {
+    timeZone: 'Asia/Phnom_Penh',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true
+  });
+};

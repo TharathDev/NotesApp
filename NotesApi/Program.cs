@@ -8,6 +8,10 @@ using NotesApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Set the application timezone to Cambodia
+TimeZoneInfo.ClearCachedData();
+var cambodiaTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+
 // Add services to the container.
 builder.Services.AddOpenApi();
 

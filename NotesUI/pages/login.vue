@@ -56,6 +56,13 @@
         </div>
       </form>
     </div>
+
+    <!-- Validation Error Modal -->
+    <ValidationErrorModal
+      :show="showErrorModal"
+      :errors="errors"
+      @close="closeErrorModal"
+    />
   </div>
 </template>
 
@@ -75,9 +82,11 @@ const {
   formData,
   errors,
   isSubmitting,
+  showErrorModal,
   getFieldError,
   handleFieldChange,
   handleSubmit,
+  closeErrorModal,
 } = useFormValidation(loginFields);
 const { login, isLoading: authLoading, error: authError } = useAuth();
 

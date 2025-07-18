@@ -47,6 +47,13 @@
         </div>
       </form>
     </div>
+
+    <!-- Validation Error Modal -->
+    <ValidationErrorModal
+      :show="showErrorModal"
+      :errors="errors"
+      @close="closeErrorModal"
+    />
   </div>
 </template>
 
@@ -57,11 +64,18 @@ import { useAuth } from '~/composables/useAuth'
 import type { FormData } from '~/composables/useFormValidation'
 
 const { registerFields } = useFormFields()
-const { formData, errors, isSubmitting, getFieldError, handleFieldChange, handleSubmit } = useFormValidation(registerFields)
+const { 
+  formData, 
+  errors, 
+  isSubmitting, 
+  showErrorModal,
+  getFieldError, 
+  handleFieldChange, 
+  handleSubmit,
+  closeErrorModal 
+} = useFormValidation(registerFields)
 const { register, isLoading: authLoading, error: authError } = useAuth()
 
-// Remove line 76: console.error('Registration error:', err)
-// In the onSubmit function:
 const onSubmit = async (data: FormData) => {
   try {
     const success = await register({

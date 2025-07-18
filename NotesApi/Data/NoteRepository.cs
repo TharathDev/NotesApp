@@ -7,6 +7,7 @@ namespace NotesApi.Data
     public class NoteRepository : INoteRepository
     {
         private readonly string _connectionString;
+        private static readonly TimeZoneInfo CambodiaTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time"); // UTC+7
 
         public NoteRepository(string connectionString)
         {
@@ -35,8 +36,9 @@ namespace NotesApi.Data
                 VALUES (@Title, @Content, @UserId, @CreatedAt, @UpdatedAt);
                 SELECT LAST_INSERT_ID();";
             
-            note.CreatedAt = DateTime.UtcNow;
-            note.UpdatedAt = DateTime.UtcNow;
+            var cambodiaTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, CambodiaTimeZone);
+            note.CreatedAt = cambodiaTime;
+            note.UpdatedAt = cambodiaTime;
             
             var id = await connection.QuerySingleAsync<int>(sql, note);
             note.Id = id;
@@ -51,7 +53,8 @@ namespace NotesApi.Data
                 SET Title = @Title, Content = @Content, UpdatedAt = @UpdatedAt 
                 WHERE Id = @Id AND UserId = @UserId";
             
-            note.UpdatedAt = DateTime.UtcNow;
+            // Convert UTC to Cambodia time (UTC+7)
+            note.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, CambodiaTimeZone);
             
             var rowsAffected = await connection.ExecuteAsync(sql, new 
             { 

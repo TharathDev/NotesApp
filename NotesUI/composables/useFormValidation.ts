@@ -14,6 +14,7 @@ export const useFormValidation = (fields: FormField[]) => {
   const formData = ref<FormData>({});
   const errors = ref<ValidationError[]>([]);
   const isSubmitting = ref(false);
+  const showErrorModal = ref(false);
 
   // Initialize form data
   const initializeForm = () => {
@@ -40,6 +41,14 @@ export const useFormValidation = (fields: FormField[]) => {
       return null;
     }
 
+    // Custom validation (runs first if present)
+    if (field.validation?.customValidation) {
+      const customError = field.validation.customValidation(value);
+      if (customError) {
+        return customError;
+      }
+    }
+
     // Length validation
     if (
       field.validation?.minLength &&
@@ -49,6 +58,14 @@ export const useFormValidation = (fields: FormField[]) => {
         field.validation.message ||
         `${field.label} must be at least ${field.validation.minLength} characters long`
       );
+    }
+
+    // Max length validation
+    if (
+      field.validation?.maxLength &&
+      value.length > field.validation.maxLength
+    ) {
+      return `${field.label} must not exceed ${field.validation.maxLength} characters`;
     }
 
     // Pattern validation
@@ -136,12 +153,20 @@ export const useFormValidation = (fields: FormField[]) => {
     try {
       if (validateForm()) {
         await submitCallback(formData.value);
+      } else {
+        // Show error modal when validation fails
+        showErrorModal.value = true;
       }
     } catch (error) {
       // Handle error silently or show user-friendly message
     } finally {
       isSubmitting.value = false;
     }
+  };
+
+  // Close error modal
+  const closeErrorModal = () => {
+    showErrorModal.value = false;
   };
 
   // Reset form
@@ -156,11 +181,13 @@ export const useFormValidation = (fields: FormField[]) => {
     formData: readonly(formData),
     errors: readonly(errors),
     isSubmitting: readonly(isSubmitting),
+    showErrorModal: readonly(showErrorModal),
     validateField,
     validateForm,
     getFieldError,
     handleFieldChange,
     handleSubmit,
+    closeErrorModal,
     resetForm,
   };
 };
