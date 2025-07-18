@@ -1,89 +1,62 @@
 <template>
-  <div class="min-h-screen bg-gray-100 flex items-center justify-center py-12 px-4">
-    <div class="max-w-md w-full">
-      <!-- Header -->
-      <div class="text-center mb-8">
-        <h1 class="text-3xl font-bold text-gray-900 mb-2">📝 Notes App</h1>
-        <h2 class="text-xl text-gray-600">Sign in to your account</h2>
+  <div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8">
+      <div>
+        <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+          Sign in to your account
+        </h2>
       </div>
-
-      <!-- Login Form -->
-      <div class="bg-white py-8 px-6 shadow-lg rounded-lg">
-        <form @submit.prevent="handleSubmit" class="space-y-6">
-          <!-- Email Field -->
-          <Input
-            id="email"
-            v-model="form.email"
-            type="email"
-            label="Email Address"
-            placeholder="Enter your email"
-            required
-          />
-
-          <!-- Password Field -->
-          <Input
-            id="password"
-            v-model="form.password"
-            type="password"
-            label="Password"
-            placeholder="Enter your password"
-            required
-          />
-
-          <!-- Submit Button -->
-          <Button
-            type="submit"
-            variant="primary"
-            full-width
-          >
-            Sign In
-          </Button>
-        </form>
-
-        <!-- Form Data Display (for testing) -->
-        <div class="mt-6 p-4 bg-gray-50 rounded-md">
-          <h3 class="text-sm font-medium text-gray-700 mb-2">Form Data (for testing):</h3>
-          <pre class="text-xs text-gray-600">{{ JSON.stringify(formDisplay, null, 2) }}</pre>
+      <form class="mt-8 space-y-6" @submit.prevent="handleSubmit(onSubmit)">
+        <div class="space-y-4">
+          <div v-for="field in loginFields" :key="field.name">
+            <Input
+              :type="field.type"
+              :label="field.label"
+              :placeholder="field.placeholder"
+              :required="field.required"
+              :model-value="formData[field.name]"
+              :error="getFieldError(field.name)"
+              @update:model-value="(value: string) => handleFieldChange(field.name, value)"
+            />
+          </div>
         </div>
 
-        <!-- Footer Links -->
-        <div class="mt-6 text-center">
+        <div>
+          <Button
+            type="submit"
+            :disabled="isSubmitting"
+            class="w-full"
+          >
+            {{ isSubmitting ? 'Signing in...' : 'Sign in' }}
+          </Button>
+        </div>
+
+        <div class="text-center">
           <p class="text-sm text-gray-600">
             Don't have an account?
-            <NuxtLink to="/register" class="font-medium text-blue-600 hover:text-blue-500">
+            <NuxtLink to="/register" class="font-medium text-indigo-600 hover:text-indigo-500">
               Sign up
             </NuxtLink>
           </p>
         </div>
-      </div>
+      </form>
     </div>
   </div>
 </template>
 
-<script setup>
-// Form data
-const form = ref({
-  email: '',
-  password: ''
-})
+<script setup lang="ts">
+import { useFormFields } from '~/composables/useFormFields'
+import { useFormValidation } from '~/composables/useFormValidation'
+import type { FormData } from '~/composables/useFormValidation'
 
-// Display form data without showing password
-const formDisplay = computed(() => ({
-  email: form.value.email,
-  password: form.value.password ? '***hidden***' : ''
-}))
+const { loginFields } = useFormFields()
+const { formData, errors, isSubmitting, getFieldError, handleFieldChange, handleSubmit } = useFormValidation(loginFields)
 
-// Handle form submission (no backend yet)
-const handleSubmit = () => {
-  console.log('Form submitted:', form.value)
-  
-  // Simple validation
-  if (!form.value.email || !form.value.password) {
-    alert('Please fill in all fields')
-    return
-  }
-  
-  // Show success message for now
-  alert(`Login attempt with email: ${form.value.email}`)
+const onSubmit = async (data: FormData) => {
+  console.log('Login form submitted:', data)
+  // Here you would typically make an API call to authenticate
+  // For now, just simulate a delay
+  await new Promise(resolve => setTimeout(resolve, 1000))
+  alert(`Login attempted with email: ${data.email}`)
 }
 </script>

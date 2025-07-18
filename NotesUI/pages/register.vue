@@ -1,125 +1,62 @@
 <template>
-  <div class="min-h-screen bg-gray-100 flex items-center justify-center py-12 px-4">
-    <div class="max-w-md w-full">
-      <!-- Header -->
-      <div class="text-center mb-8">
-        <h1 class="text-3xl font-bold text-gray-900 mb-2">📝 Notes App</h1>
-        <h2 class="text-xl text-gray-600">Create your account</h2>
+  <div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8">
+      <div>
+        <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+          Create your account
+        </h2>
       </div>
-
-      <!-- Register Form -->
-      <div class="bg-white py-8 px-6 shadow-lg rounded-lg">
-        <form @submit.prevent="handleSubmit" class="space-y-6">
-          <!-- Full Name Field -->
-          <Input
-            id="fullName"
-            v-model="form.fullName"
-            type="text"
-            label="Full Name"
-            placeholder="Enter your full name"
-            required
-          />
-
-          <!-- Email Field -->
-          <Input
-            id="email"
-            v-model="form.email"
-            type="email"
-            label="Email Address"
-            placeholder="Enter your email"
-            required
-          />
-
-          <!-- Password Field -->
-          <Input
-            id="password"
-            v-model="form.password"
-            type="password"
-            label="Password"
-            placeholder="Enter your password"
-            required
-          />
-
-          <!-- Confirm Password Field -->
-          <Input
-            id="confirmPassword"
-            v-model="form.confirmPassword"
-            type="password"
-            label="Confirm Password"
-            placeholder="Confirm your password"
-            required
-          />
-
-          <!-- Submit Button -->
-          <Button
-            type="submit"
-            variant="primary"
-            full-width
-          >
-            Create Account
-          </Button>
-        </form>
-
-        <!-- Form Data Display (for testing) -->
-        <div class="mt-6 p-4 bg-gray-50 rounded-md">
-          <h3 class="text-sm font-medium text-gray-700 mb-2">Form Data (for testing):</h3>
-          <pre class="text-xs text-gray-600">{{ JSON.stringify(formDisplay, null, 2) }}</pre>
+      <form class="mt-8 space-y-6" @submit.prevent="handleSubmit(onSubmit)">
+        <div class="space-y-4">
+          <div v-for="field in registerFields" :key="field.name">
+            <Input
+              :type="field.type"
+              :label="field.label"
+              :placeholder="field.placeholder"
+              :required="field.required"
+              :model-value="formData[field.name]"
+              :error="getFieldError(field.name)"
+              @update:model-value="(value) => handleFieldChange(field.name, value)"
+            />
+          </div>
         </div>
 
-        <!-- Footer Links -->
-        <div class="mt-6 text-center">
+        <div>
+          <Button
+            type="submit"
+            :disabled="isSubmitting"
+            class="w-full"
+          >
+            {{ isSubmitting ? 'Creating account...' : 'Create account' }}
+          </Button>
+        </div>
+
+        <div class="text-center">
           <p class="text-sm text-gray-600">
             Already have an account?
-            <NuxtLink to="/login" class="font-medium text-blue-600 hover:text-blue-500">
+            <NuxtLink to="/login" class="font-medium text-indigo-600 hover:text-indigo-500">
               Sign in
             </NuxtLink>
           </p>
         </div>
-      </div>
+      </form>
     </div>
   </div>
 </template>
 
-<script setup>
-// Form data
-const form = ref({
-  fullName: '',
-  email: '',
-  password: '',
-  confirmPassword: ''
-})
+<script setup lang="ts">
+import { useFormFields } from '~/composables/useFormFields'
+import { useFormValidation } from '~/composables/useFormValidation'
+import type { FormData } from '~/composables/useFormValidation'
 
-// Display form data without showing password
-const formDisplay = computed(() => ({
-  fullName: form.value.fullName,
-  email: form.value.email,
-  password: form.value.password ? '***hidden***' : '',
-  confirmPassword: form.value.confirmPassword ? '***hidden***' : ''
-}))
+const { registerFields } = useFormFields()
+const { formData, errors, isSubmitting, getFieldError, handleFieldChange, handleSubmit } = useFormValidation(registerFields)
 
-// Handle form submission (no backend yet)
-const handleSubmit = () => {
-  console.log('Register form submitted:', form.value)
-  
-  // Simple validation
-  if (!form.value.fullName || !form.value.email || !form.value.password || !form.value.confirmPassword) {
-    alert('Please fill in all fields')
-    return
-  }
-  
-  // Check password match
-  if (form.value.password !== form.value.confirmPassword) {
-    alert('Passwords do not match')
-    return
-  }
-  
-  // Check password length
-  if (form.value.password.length < 6) {
-    alert('Password must be at least 6 characters long')
-    return
-  }
-  
-  // Show success message for now
-  alert(`Registration attempt for: ${form.value.fullName} (${form.value.email})`)
+const onSubmit = async (data: FormData) => {
+  console.log('Register form submitted:', data)
+  // Here you would typically make an API call to register
+  // For now, just simulate a delay
+  await new Promise(resolve => setTimeout(resolve, 1000))
+  alert(`Registration attempted with email: ${data.email} and name: ${data.fullName}`)
 }
 </script>
