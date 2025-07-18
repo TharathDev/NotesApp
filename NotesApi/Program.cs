@@ -11,6 +11,18 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddOpenApi();
 
+// Add CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins("http://localhost:3000") // Nuxt dev server
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
+    });
+});
+
 // Register repositories and services
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddScoped<INoteRepository>(provider => new NoteRepository(connectionString!));
@@ -43,6 +55,9 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
+
+// Use CORS - IMPORTANT: This must be before UseAuthentication and UseAuthorization
+app.UseCors("AllowFrontend");
 
 app.UseHttpsRedirection();
 app.UseAuthentication();
